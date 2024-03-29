@@ -1,16 +1,19 @@
 ---
-title: "CE1"
-author: "Josia Schramm"
+title: "Forbes List Analysis"
+author: "Josia Schramm, Bernhard Eymann, Nico Joller"
 date: "`r Sys.Date()`"
 output: html_document
 ---
+## Research Question
+We want to analyze the Forbes List of the richest people in the world. We want to find out if there is a correlation between age and net worth and if the distribution of wealth is equal among the continents.
+Our hypothesises are 1: There is a correlation between age and net worth. 2: The distribution of wealth is not equal among the continents.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Load Data, libraries
-
+We load the tidyverse library and the data from the data_orig folder.
 ```{r}
 library(tidyverse)
 data_orig <- read.csv(here::here("data_orig", "forbes_richman.csv"))
