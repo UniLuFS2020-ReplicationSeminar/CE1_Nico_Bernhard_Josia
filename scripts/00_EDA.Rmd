@@ -22,6 +22,8 @@ data_orig <- read.csv("data_orig/forbes_richman.csv")
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
+
+# Frage Bernhard: Was bewirkt dieser Teil?
 sapply(data_orig, class)
 sapply(data_orig, table)
 
@@ -29,6 +31,7 @@ summary(data_orig)
 
 
 # remove non integer and non "." in Net.Worth
+# Bernhard: Habe ich halb verstanden, aber nicht ganz. Was macht die Funktion genau?
 remove_non_integer <- function(vector) {
   vector <- str_replace_all(vector, "[^0-9.]", "")
   vector <- as.numeric(vector)
