@@ -134,23 +134,24 @@ ggsave(p2,
 
 ```
 
-## Hypothesis 1 and Regression
+## Hypothesis 3 and Regression
 
-### Hypothesis to be tested
+### Test: Plot and Regression
 
 The hypothesis to be tested is whether age is associated with net worth.
 
 H0: Beta_age = 0
 
 H1: Beta_age != 0
+We plot the relationship between age and net worth and perform a regression analysis.
 
-#### Interpretation:
+### Interpretation
 
 One year increase in age is (potentially) associated with a 0.028 billion increase in net worth
 
 The p-value is 0.09, which means we can reject the null hypothesis at the alpha = 0.1 significance level, but we fail to reject the null hypothesis at alpha = 0.05 significance level
 
-#### Conclusion:
+### Conclusion
 
 It appears to be that an increase in age is somewhat correlated to an increase in net worth, but the evidence is weak, and there are many potential hidden confounders which were not adressed.
 
