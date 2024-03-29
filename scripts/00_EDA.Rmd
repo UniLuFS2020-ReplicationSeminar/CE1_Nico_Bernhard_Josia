@@ -43,6 +43,7 @@ df <- data_orig
 df$Net.Worth <- remove_non_integer(data_orig$Net.Worth)
 
 # mutate chars into factors, mutate age into numeric
+#Nico, ifelse versteh ich nicht
 df <- df %>% 
   mutate(across(c(Name, Country, Source, Industry),as.factor)) %>% 
   mutate(Age = ifelse(Age == "N/A", NA, Age)) %>% 
