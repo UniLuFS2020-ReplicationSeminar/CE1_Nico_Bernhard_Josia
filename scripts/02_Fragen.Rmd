@@ -21,7 +21,9 @@ data_orig <- read.csv(here::here("data_orig", "forbes_richman.csv"))
 ```
 
 ## Data cleaning
+We clean the data by removing non-integer values from the Net.Worth column and transforming the Age column into a numeric column. We also sort the countries into continents and the industries into fewer categories.
 
+```{r}
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
