@@ -1,0 +1,187 @@
+---
+title: "ClassExercise_Report"
+author: "Josia,Bernhard,Nico"
+date: "`r Sys.Date()`"
+output: html_document
+---
+---
+title: "CE1"
+author: "Josia Schramm"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Data, libraries
+
+```{r}
+library(tidyverse)
+data_orig <- read.csv(here::here("data_orig", "forbes_richman.csv"))
+
+```
+
+## Data cleaning
+
+```{r pressure, echo=FALSE}
+
+# Check class of cols and output tables of cols to see whats in it
+# sapply(data_orig, class)
+# sapply(data_orig, table)
+
+# summary(data_orig)
+
+
+# remove non integer and non "." in Net.Worth
+remove_non_integer <- function(vector) {
+  vector <- str_replace_all(vector, "[^0-9.]", "")
+  vector <- as.numeric(vector)
+  return(vector)
+}
+
+# assign original data to working df
+df <- data_orig
+
+# apply function to clean net worth
+df$Net.Worth <- remove_non_integer(data_orig$Net.Worth)
+
+# Set missing values in Age to NA
+# reassign countries to continents
+# reassign industry to fewer categories
+# mutate chars into factors, mutate age into numeric
+# drop missing values
+df <- df %>% 
+  mutate(Age = ifelse(Age == "N/A", NA, Age)) %>% 
+  mutate(Age = as.numeric(Age)) %>%
+  mutate(Country = ifelse(Country %in% c("Canada", "United States"), "North America", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("Argentina", "Barbados", "Belize", "Brazil", "Chile", "Colombia","Macau", "Guernsey", "Mexico", "Peru", "St. Kitts and Nevis", "Uruguay", "Venezuela"), "South America", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("Austria","Belgium", "Bulgaria", "Cyprus", "Czechia", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Liechtenstein", "Monaco", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Russia", "Slovakia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom"),"Europe", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("China", "Hong Kong", "India", "Indonesia", "Japan", "Kazakhstan", "Lebanon", "Malaysia", "Nepal", "Oman", "Philippines", "Qatar", "Singapore", "South Korea", "Taiwan", "Thailand", "Turkey", "United Arab Emirates", "Vietnam"),"Asia", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("Algeria", "Egypt", "Eswatini (Swaziland)", "Morocco", "Nigeria", "South Africa", "Tanzania" ),"Africa", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("Australia", "New Zealand"),"Asia", Country)) %>% 
+  mutate(Industry = ifelse(Industry %in% c("Energy", "Technology", "Telecom", "Construction & Engineering"), "Energy & Technology", Industry)) %>% 
+  mutate(Industry = ifelse(Industry %in% c("Fashion & Retail", "Food & Beverage", "Gambling & Casinos", "Media & Entertainment", "Service", "Sports"),"Entertainment & Consumption", Industry)) %>% 
+  mutate(Industry = ifelse(Industry %in% c("Automotive Construction & Engineering ", "Manufacturing", "Logistics", "Metals & Mining", "Automotive"),"Industrial & Manufacturing", Industry)) %>% 
+  mutate(Industry = ifelse(Industry %in% c("Real Estate", "Finance & Investments"),"Real Estate & Finance", Industry)) %>% 
+  mutate(across(c(Name, Country, Source, Industry),as.factor)) %>% 
+  drop_na() 
+
+
+# print summary of interesting cols
+summary(df[,c("Age", "Net.Worth", "Industry", "Country")])
+
+```
+
+## Plots
+
+```{r pressure, echo=FALSE}
+
+# barplot countries make them fancier with GPT
+p1 <- ggplot(df, aes(x = Country, fill = Country)) +  # Fill bars based on Country for a colorful plot
+  geom_bar() +  # Default stat_count is fine here
+  coord_flip() +  # Flip coordinates for horizontal bars
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal(base_size = 14) +  # Use a minimal theme with a larger base font size
+  labs(
+    title = "Where are the richest people from?",
+    x = "Continent",
+    y = "Count",
+    fill = "Continent"  # Legend title
+  ) +
+  theme(legend.position = "none",  # Hide legend if not needed
+        axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle for x-axis labels (if you decide against coord_flip)
+        plot.title = element_text(size = 20, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 16)) +  # Customize axis titles
+  geom_text(stat = 'count', aes(label = ..count..), position = position_stack(vjust = 0.5), color = "white")  # Add count labels
+
+
+# plot industries, make plot fancier with GPT
+p2 <- ggplot(df, aes(x = factor(1), fill = Industry)) +
+  geom_bar(width = 1, stat = "count") +
+  coord_polar("y", start = 0) +
+  scale_fill_brewer(palette = "Set2") +  # Use a predefined color palette for clarity
+  theme_void() +
+  labs(title = "How did they get rich?", fill = "Industry") +  # Add a meaningful title and adjust legend title
+  geom_text(aes(label = scales::percent(..count../sum(..count..))),
+            position = position_stack(vjust = 0.5),
+            stat = "count",
+            color = "black") +  # Add percentage labels
+  theme(legend.position = "bottom",  # Adjust legend position
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Center and bold the title
+
+print(p1)
+print(p2)
+
+ggsave(p1,
+       filename = here::here("output", "countries.tiff"),
+       device = "tiff",
+       width = 6, height = 4, units = "in",
+       dpi = 600,
+       compress = "lzw")
+ggsave(p2,
+       filename = here::here("output", "industries.tiff"),
+       device = "tiff",
+       width = 6, height = 4, units = "in",
+       dpi = 600,
+       compress = "lzw")
+
+
+```
+
+## Hypothesis and Regression
+
+
+### Hypothesis
+
+The hypothesis to be tested is whether age is associated with net worth.
+
+
+H0: Beta_age = 0
+
+H1: Beta_age != 0
+
+
+#### Interpretation:
+
+One year increase in age is (potentially) associated with a 0.028 billion increase in net worth
+
+The p-value is 0.09, which means we can reject the null hypothesis at the alpha = 0.1 significance level, but we fail to reject the null hypothesis at alpha = 0.05 significance level
+
+
+#### Conclusion:
+
+It appears to be that an increase in age is somewhat correlated to an increase in net worth, but the evidence is weak, and there are many potential hidden confounders which were not adressed.
+
+
+```{r pressure, echo=FALSE}
+
+# Scatterplot Age and Net.Worth, make it fancier with GPT
+p3 <- ggplot(df, aes(x = Age, y = Net.Worth, color = Age)) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_smooth(method = "loess", se = FALSE, color = "blue") +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Do they get richer with age?",
+    x = "Age",
+    y = "Net Worth (in billions)"
+  ) +
+  theme(legend.position = "bottom")
+
+print(p3)
+
+ggsave(p3,
+       filename = here::here("output", "age_networth.tiff"),
+       device = "tiff",
+       width = 6, height = 4, units = "in",
+       dpi = 600,
+       compress = "lzw")
+
+model <- lm(Net.Worth ~ Age, data = df)
+
+lmtest::coeftest(model, vcov. = sandwich::vcovHC(model, type = "HC1"))
+
+
+
+```
