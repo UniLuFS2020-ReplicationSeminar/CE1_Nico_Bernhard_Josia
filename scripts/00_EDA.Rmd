@@ -166,7 +166,7 @@ p3 <- ggplot(df, aes(x = Age, y = Net.Worth, color = Age)) +
 print(p3)
 
 ggsave(p3,
-       filename = here::here("outout", "age_networth.tiff"),
+       filename = here::here("output", "age_networth.tiff"),
        device = "tiff",
        width = 6, height = 4, units = "in",
        dpi = 600,
