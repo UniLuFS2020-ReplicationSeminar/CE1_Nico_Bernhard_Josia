@@ -19,7 +19,6 @@ data_orig <- read.csv(here::here("data_orig", "forbes_richman.csv"))
 
 ## Data cleaning
 
-You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
 
@@ -65,20 +64,12 @@ df <- df %>%
   drop_na() 
 
 
-
-
-
-
-
-
-
-
-
-
+# print summary of interesting cols
+summary(df[,c("Age", "Net.Worth", "Industry", "Country")])
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
 
 ## Plots
 
@@ -153,7 +144,6 @@ model <- lm(Net.Worth ~ Age, data = df)
 
 lmtest::coeftest(model, vcov. = sandwich::vcovHC(model, type = "HC1"))
 
-broom::tidy(model)
 
 
 ```
