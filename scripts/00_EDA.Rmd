@@ -19,7 +19,6 @@ data_orig <- read.csv(here::here("data_orig", "forbes_richman.csv"))
 
 ## Data cleaning
 
-
 ```{r pressure, echo=FALSE}
 
 # Check class of cols and output tables of cols to see whats in it
@@ -69,10 +68,7 @@ summary(df[,c("Age", "Net.Worth", "Industry", "Country")])
 
 ```
 
-
-
 ## Plots
-
 
 ```{r pressure, echo=FALSE}
 
@@ -111,18 +107,40 @@ ggplot(df, aes(x = factor(1), fill = Industry)) +
 
 
 
-
+ggsave(p,
+       filename = "my_plot.tiff",
+       device = "tiff",
+       width = 6, height = 4, units = "in",
+       dpi = 600,
+       compress = "lzw")
 
 
 ```
 
 ## Hypothesis and Regression
 
-H0: B_age = 0
 
-H1: B_age != 0
+### Hypothesis
 
-Decision: Do not reject H0
+The hypothesis to be tested is whether age is associated with net worth.
+
+
+H0: Beta_age = 0
+
+H1: Beta_age != 0
+
+
+#### Interpretation:
+
+One year increase in age is (potentially) associated with a 0.028 billion increase in net worth
+
+The p-value is 0.09, which means we can reject the null hypothesis at the alpha = 0.1 significance level, but we fail to reject the null hypothesis at alpha = 0.05 significance level
+
+
+#### Conclusion:
+
+It appears to be that an increase in age is somewhat correlated to an increase in net worth, but the evidence is weak, and there are many potential hidden confounders which were not adressed.
+
 
 ```{r pressure, echo=FALSE}
 
