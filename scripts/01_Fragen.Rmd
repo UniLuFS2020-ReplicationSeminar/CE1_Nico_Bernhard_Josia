@@ -82,7 +82,7 @@ H1: B_age != 0
 
 Decision: Do not reject H0
 
-```{r pressure, echo=FALSE}
+```{r regression, echo=FALSE}
 
 model <- lm(Net.Worth ~ Age, data = df)
 
