@@ -1,0 +1,87 @@
+---
+title: "CE1"
+author: "Josia Schramm"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Data, libraries
+
+```{r cars}
+library(tidyverse)
+data_orig <- read.csv("data_orig/forbes_richman.csv")
+
+```
+
+## Data cleaning
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+sapply(data_orig, class)
+sapply(data_orig, table)
+
+summary(data_orig)
+
+
+# remove non integer and non "." in Net.Worth
+remove_non_integer <- function(vector) {
+  vector <- str_replace_all(vector, "[^0-9.]", "")
+  vector <- as.numeric(vector)
+  return(vector)
+}
+
+df <- data_orig
+
+df$Net.Worth <- remove_non_integer(data_orig$Net.Worth)
+
+# mutate chars into factors, mutate age into numeric
+df <- df %>% 
+  mutate(across(c(Name, Country, Source, Industry),as.factor)) %>% 
+  mutate(Age = ifelse(Age == "N/A", NA, Age)) %>% 
+  mutate(Age = as.numeric(Age)) %>% 
+  drop_na() 
+
+
+p1 <- ggplot(df, aes(Age, Net.Worth)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth()
+
+  
+table(is.na(df$Age))
+table(is.na(df$Net.Worth))
+
+length(table(df$Country))
+
+class(df$Age)
+class(df$Net.Worth)
+
+
+length(df$Net.Worth)
+length(df$Age)
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Hypothesis and Regression
+
+H0: B_age = 0
+
+H1: B_age != 0
+
+Decision: Do not reject H0
+
+```{r pressure, echo=FALSE}
+
+model <- lm(Net.Worth ~ Age, data = df)
+
+summary(model)
+
+```
