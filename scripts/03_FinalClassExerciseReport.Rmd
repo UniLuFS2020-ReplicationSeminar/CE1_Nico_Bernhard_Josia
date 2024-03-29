@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 We load the tidyverse library and the data from the data_orig folder.
 
-```{r}
+```{r cleaning}
 library(tidyverse)
 data_orig <- read.csv(here::here("data_orig", "forbes_richman.csv"))
 
@@ -80,7 +80,7 @@ summary(df[,c("Age", "Net.Worth", "Industry", "Country")])
 
 We plot the distribution of richest people among the continents and the industries within which they made their fortune in two separate barplots. Conclusion: The distribution of wealth is not equal among the continents and the industries.
 
-```{r pressure, echo=FALSE}
+```{r plots, echo=FALSE}
 
 # barplot countries make them fancier with GPT
 p1 <- ggplot(df, aes(x = Country, fill = Country)) +  # Fill bars based on Country for a colorful plot
@@ -143,6 +143,7 @@ The hypothesis to be tested is whether age is associated with net worth.
 H0: Beta_age = 0
 
 H1: Beta_age != 0
+
 We plot the relationship between age and net worth and perform a regression analysis.
 
 ### Interpretation
@@ -155,7 +156,7 @@ The p-value is 0.09, which means we can reject the null hypothesis at the alpha 
 
 It appears to be that an increase in age is somewhat correlated to an increase in net worth, but the evidence is weak, and there are many potential hidden confounders which were not adressed.
 
-```{r pressure, echo=FALSE}
+```{r model, echo=FALSE}
 
 # Scatterplot Age and Net.Worth, make it fancier with GPT
 p3 <- ggplot(df, aes(x = Age, y = Net.Worth, color = Age)) +
