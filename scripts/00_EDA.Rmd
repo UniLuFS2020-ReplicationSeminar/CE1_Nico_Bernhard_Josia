@@ -23,27 +23,31 @@ You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
 
-# Frage Bernhard: Was bewirkt dieser Teil?
-sapply(data_orig, class)
-sapply(data_orig, table)
+# Check class of cols and output tables of cols to see whats in it
+# sapply(data_orig, class)
+# sapply(data_orig, table)
 
-summary(data_orig)
+# summary(data_orig)
 
 
 # remove non integer and non "." in Net.Worth
-# Bernhard: Habe ich halb verstanden, aber nicht ganz. Was macht die Funktion genau?
 remove_non_integer <- function(vector) {
   vector <- str_replace_all(vector, "[^0-9.]", "")
   vector <- as.numeric(vector)
   return(vector)
 }
 
+# assign original data to working df
 df <- data_orig
 
+# apply function to clean net worth
 df$Net.Worth <- remove_non_integer(data_orig$Net.Worth)
 
+# Set missing values in Age to NA
+# reassign countries to continents
+# reassign industry to fewer categories
 # mutate chars into factors, mutate age into numeric
-#Nico, ifelse versteh ich nicht
+# drop missing values
 df <- df %>% 
   mutate(Age = ifelse(Age == "N/A", NA, Age)) %>% 
   mutate(Age = as.numeric(Age)) %>%
@@ -53,59 +57,73 @@ df <- df %>%
   mutate(Country = ifelse(Country %in% c("China", "Hong Kong", "India", "Indonesia", "Japan", "Kazakhstan", "Lebanon", "Malaysia", "Nepal", "Oman", "Philippines", "Qatar", "Singapore", "South Korea", "Taiwan", "Thailand", "Turkey", "United Arab Emirates", "Vietnam"),"Asia", Country)) %>% 
   mutate(Country = ifelse(Country %in% c("Algeria", "Egypt", "Eswatini (Swaziland)", "Morocco", "Nigeria", "South Africa", "Tanzania" ),"Africa", Country)) %>% 
   mutate(Country = ifelse(Country %in% c("Australia", "New Zealand"),"Asia", Country)) %>% 
+  mutate(Industry = ifelse(Industry %in% c("Energy", "Technology", "Telecom", "Construction & Engineering"), "Energy & Technology", Industry)) %>% 
+  mutate(Industry = ifelse(Industry %in% c("Fashion & Retail", "Food & Beverage", "Gambling & Casinos", "Media & Entertainment", "Service", "Sports"),"Entertainment & Consumption", Industry)) %>% 
+  mutate(Industry = ifelse(Industry %in% c("Automotive Construction & Engineering ", "Manufacturing", "Logistics", "Metals & Mining", "Automotive"),"Industrial & Manufacturing", Industry)) %>% 
+  mutate(Industry = ifelse(Industry %in% c("Real Estate", "Finance & Investments"),"Real Estate & Finance", Industry)) %>% 
   mutate(across(c(Name, Country, Source, Industry),as.factor)) %>% 
-  
   drop_na() 
 
 
-table(df$Country)
-
-# Sort Countries into Continents
-# # North America
-# "Canada", "United States"
-# # South America
-# "Argentina", "Barbados", "Belize", "Brazil", "Chile", "Colombia","Macau" "Guernsey", "Mexico", "Peru", "St. Kitts and Nevis", "Uruguay", "Venezuela"
-# # Europe
-# "Belgium", "Bulgaria", "Cyprus", "Czechia", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Liechtenstein", "Monaco", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Russia", "Slovakia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom", "Austria" 
-# # Asia
-# "China", "Hong Kong", "India", "Indonesia", "Japan", "Kazakhstan", "Lebanon", "Malaysia", "Nepal", "Oman", "Philippines", "Qatar", "Singapore", "South Korea", "Taiwan", "Thailand", "Turkey", "United Arab Emirates", "Vietnam"
-# # Africa
-# "Algeria", "Egypt", "Eswatini (Swaziland)", "Morocco", "Nigeria", "South Africa", "Tanzania" 
-# # Oceania
-# "Australia", "New Zealand"
-
-# Scatterplot Age and Net.Worth
-p1 <- ggplot(df, aes(Age, Net.Worth)) +
-  geom_point() +
-  theme_minimal()+
-  geom_smooth()
-
-# barplot countries
-p2 <- ggplot(df, aes(Country))+
-  geom_bar()+
-  theme_minimal()
 
 
 
 
 
-# Debugging
-# table(is.na(df$Age))
-# table(is.na(df$Net.Worth))
-# 
-# length(table(df$Country))
-# 
-# class(df$Age)
-# class(df$Net.Worth)
-# 
-# 
-# length(df$Net.Worth)
-# length(df$Age)
+
+
+
+
 
 
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Plots
+
+
+```{r pressure, echo=FALSE}
+
+# barplot countriesm ake them fancier with GPT
+ggplot(df, aes(x = Country, fill = Country)) +  # Fill bars based on Country for a colorful plot
+  geom_bar() +  # Default stat_count is fine here
+  coord_flip() +  # Flip coordinates for horizontal bars
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal(base_size = 14) +  # Use a minimal theme with a larger base font size
+  labs(
+    title = "Where are the richest people from?",
+    x = "Continent",
+    y = "Count",
+    fill = "Continent"  # Legend title
+  ) +
+  theme(legend.position = "none",  # Hide legend if not needed
+        axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle for x-axis labels (if you decide against coord_flip)
+        plot.title = element_text(size = 20, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 16)) +  # Customize axis titles
+  geom_text(stat = 'count', aes(label = ..count..), position = position_stack(vjust = 0.5), color = "white")  # Add count labels
+
+
+# plot industries, make plot fancier with GPT
+ggplot(df, aes(x = factor(1), fill = Industry)) +
+  geom_bar(width = 1, stat = "count") +
+  coord_polar("y", start = 0) +
+  scale_fill_brewer(palette = "Set2") +  # Use a predefined color palette for clarity
+  theme_void() +
+  labs(title = "How did they get rich?", fill = "Industry") +  # Add a meaningful title and adjust legend title
+  geom_text(aes(label = scales::percent(..count../sum(..count..))),
+            position = position_stack(vjust = 0.5),
+            stat = "count",
+            color = "black") +  # Add percentage labels
+  theme(legend.position = "bottom",  # Adjust legend position
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Center and bold the title
+
+
+
+
+
+
+```
 
 ## Hypothesis and Regression
 
@@ -117,8 +135,25 @@ Decision: Do not reject H0
 
 ```{r pressure, echo=FALSE}
 
+# Scatterplot Age and Net.Worth, make it fancier with GPT
+ggplot(df, aes(x = Age, y = Net.Worth, color = Age)) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_smooth(method = "loess", se = FALSE, color = "blue") +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Do they get richer with age?",
+    x = "Age",
+    y = "Net Worth (in billions)"
+  ) +
+  theme(legend.position = "bottom")
+
+
+
 model <- lm(Net.Worth ~ Age, data = df)
 
-summary(model)
+lmtest::coeftest(model, vcov. = sandwich::vcovHC(model, type = "HC1"))
+
+broom::tidy(model)
+
 
 ```
