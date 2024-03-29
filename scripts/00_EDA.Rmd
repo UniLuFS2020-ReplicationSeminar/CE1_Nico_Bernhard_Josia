@@ -11,9 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Load Data, libraries
 
-```{r cars}
+```{r}
 library(tidyverse)
-data_orig <- read.csv("data_orig/forbes_richman.csv")
+data_orig <- read.csv(here::here("data_orig", "forbes_richman.csv"))
 
 ```
 
