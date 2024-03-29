@@ -25,7 +25,7 @@ data_orig <- read.csv(here::here("data_orig", "forbes_richman.csv"))
 
 ## Data cleaning, transformation and summary
 
-We clean the data by removing non-integer values from the Net.Worth column and transforming the Age column into a numeric column. We also sort the countries into continents and the industries into fewer categories. We drop missing values and transform the character columns into factors. And print a summary of the interesting columns.
+We clean the data by removing any non-numeric and period chars from the Net.Worth column and by transforming the Age column into a numeric column. We also sort the countries into continents and the industries into fewer categories. We drop missing values and transform the character columns into factors. And print a summary of the interesting columns.
 
 ```{r}
 
@@ -78,7 +78,7 @@ summary(df[,c("Age", "Net.Worth", "Industry", "Country")])
 
 ## Plots & Conclusion: Hypotheses 1 & 2
 
-We plot the distribution of wealth among the continents and the industries in two separate barplots. Conclusion: The distribution of wealth is not equal among the continents and the industries.
+We plot the distribution of richest people among the continents and the industries within which they made their fortune in two separate barplots. Conclusion: The distribution of wealth is not equal among the continents and the industries.
 
 ```{r pressure, echo=FALSE}
 
