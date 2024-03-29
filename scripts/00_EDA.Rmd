@@ -45,29 +45,62 @@ df$Net.Worth <- remove_non_integer(data_orig$Net.Worth)
 # mutate chars into factors, mutate age into numeric
 #Nico, ifelse versteh ich nicht
 df <- df %>% 
-  mutate(across(c(Name, Country, Source, Industry),as.factor)) %>% 
   mutate(Age = ifelse(Age == "N/A", NA, Age)) %>% 
-  mutate(Age = as.numeric(Age)) %>% 
+  mutate(Age = as.numeric(Age)) %>%
+  mutate(Country = ifelse(Country %in% c("Canada", "United States"), "North America", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("Argentina", "Barbados", "Belize", "Brazil", "Chile", "Colombia","Macau", "Guernsey", "Mexico", "Peru", "St. Kitts and Nevis", "Uruguay", "Venezuela"), "South America", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("Austria","Belgium", "Bulgaria", "Cyprus", "Czechia", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Liechtenstein", "Monaco", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Russia", "Slovakia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom"),"Europe", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("China", "Hong Kong", "India", "Indonesia", "Japan", "Kazakhstan", "Lebanon", "Malaysia", "Nepal", "Oman", "Philippines", "Qatar", "Singapore", "South Korea", "Taiwan", "Thailand", "Turkey", "United Arab Emirates", "Vietnam"),"Asia", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("Algeria", "Egypt", "Eswatini (Swaziland)", "Morocco", "Nigeria", "South Africa", "Tanzania" ),"Africa", Country)) %>% 
+  mutate(Country = ifelse(Country %in% c("Australia", "New Zealand"),"Asia", Country)) %>% 
+  mutate(across(c(Name, Country, Source, Industry),as.factor)) %>% 
+  
   drop_na() 
 
 
+table(df$Country)
+
+# Sort Countries into Continents
+# # North America
+# "Canada", "United States"
+# # South America
+# "Argentina", "Barbados", "Belize", "Brazil", "Chile", "Colombia","Macau" "Guernsey", "Mexico", "Peru", "St. Kitts and Nevis", "Uruguay", "Venezuela"
+# # Europe
+# "Belgium", "Bulgaria", "Cyprus", "Czechia", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Liechtenstein", "Monaco", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Russia", "Slovakia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom", "Austria" 
+# # Asia
+# "China", "Hong Kong", "India", "Indonesia", "Japan", "Kazakhstan", "Lebanon", "Malaysia", "Nepal", "Oman", "Philippines", "Qatar", "Singapore", "South Korea", "Taiwan", "Thailand", "Turkey", "United Arab Emirates", "Vietnam"
+# # Africa
+# "Algeria", "Egypt", "Eswatini (Swaziland)", "Morocco", "Nigeria", "South Africa", "Tanzania" 
+# # Oceania
+# "Australia", "New Zealand"
+
+# Scatterplot Age and Net.Worth
 p1 <- ggplot(df, aes(Age, Net.Worth)) +
   geom_point() +
   theme_minimal()+
   geom_smooth()
 
-  
-table(is.na(df$Age))
-table(is.na(df$Net.Worth))
-
-length(table(df$Country))
-
-class(df$Age)
-class(df$Net.Worth)
+# barplot countries
+p2 <- ggplot(df, aes(Country))+
+  geom_bar()+
+  theme_minimal()
 
 
-length(df$Net.Worth)
-length(df$Age)
+
+
+
+# Debugging
+# table(is.na(df$Age))
+# table(is.na(df$Net.Worth))
+# 
+# length(table(df$Country))
+# 
+# class(df$Age)
+# class(df$Net.Worth)
+# 
+# 
+# length(df$Net.Worth)
+# length(df$Age)
 
 
 ```
