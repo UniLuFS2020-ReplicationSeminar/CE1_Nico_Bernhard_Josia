@@ -72,8 +72,8 @@ summary(df[,c("Age", "Net.Worth", "Industry", "Country")])
 
 ```{r pressure, echo=FALSE}
 
-# barplot countriesm ake them fancier with GPT
-ggplot(df, aes(x = Country, fill = Country)) +  # Fill bars based on Country for a colorful plot
+# barplot countries make them fancier with GPT
+p1 <- ggplot(df, aes(x = Country, fill = Country)) +  # Fill bars based on Country for a colorful plot
   geom_bar() +  # Default stat_count is fine here
   coord_flip() +  # Flip coordinates for horizontal bars
   scale_fill_brewer(palette = "Set2") +
@@ -92,7 +92,7 @@ ggplot(df, aes(x = Country, fill = Country)) +  # Fill bars based on Country for
 
 
 # plot industries, make plot fancier with GPT
-ggplot(df, aes(x = factor(1), fill = Industry)) +
+p2 <- ggplot(df, aes(x = factor(1), fill = Industry)) +
   geom_bar(width = 1, stat = "count") +
   coord_polar("y", start = 0) +
   scale_fill_brewer(palette = "Set2") +  # Use a predefined color palette for clarity
@@ -105,10 +105,17 @@ ggplot(df, aes(x = factor(1), fill = Industry)) +
   theme(legend.position = "bottom",  # Adjust legend position
         plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Center and bold the title
 
+print(p1)
+print(p2)
 
-
-ggsave(p,
-       filename = "my_plot.tiff",
+ggsave(p1,
+       filename = here::here("output", "countries.tiff"),
+       device = "tiff",
+       width = 6, height = 4, units = "in",
+       dpi = 600,
+       compress = "lzw")
+ggsave(p2,
+       filename = here::here("output", "industries.tiff"),
        device = "tiff",
        width = 6, height = 4, units = "in",
        dpi = 600,
@@ -145,7 +152,7 @@ It appears to be that an increase in age is somewhat correlated to an increase i
 ```{r pressure, echo=FALSE}
 
 # Scatterplot Age and Net.Worth, make it fancier with GPT
-ggplot(df, aes(x = Age, y = Net.Worth, color = Age)) +
+p3 <- ggplot(df, aes(x = Age, y = Net.Worth, color = Age)) +
   geom_point(size = 3, alpha = 0.6) +
   geom_smooth(method = "loess", se = FALSE, color = "blue") +
   theme_minimal(base_size = 14) +
@@ -156,7 +163,14 @@ ggplot(df, aes(x = Age, y = Net.Worth, color = Age)) +
   ) +
   theme(legend.position = "bottom")
 
+print(p3)
 
+ggsave(p3,
+       filename = here::here("outout", "age_networth.tiff"),
+       device = "tiff",
+       width = 6, height = 4, units = "in",
+       dpi = 600,
+       compress = "lzw")
 
 model <- lm(Net.Worth ~ Age, data = df)
 
